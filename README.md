@@ -6,3 +6,9 @@
 ![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/51655e7d-3173-4d69-8699-1a84ae91b2ba)
 
 Dlib 是一套基於 C++ 的機器學習工具包，藉由 Dlib 可以使用這些機器學習工具在任何的專案上，目前無論在機器人、嵌入設備、移動設備甚至是大型高效運算環境中都被廣泛使用。
+# 三、實作
+使用dlib套件之前請先下載安裝visual Studio2019以後版本。安裝時要勾選使用C++桌面開發、使用Windows平台，安裝好visual Studio2019後皆可執行安裝pip install dlib套件。
+
+```
+pip install dlib
+```
