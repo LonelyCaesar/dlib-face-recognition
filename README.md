@@ -117,4 +117,114 @@ Imutils模組是一個圖形處理的模組，它有為dlib提供臉部68點特�
 pip install imutils
 ```
 ### 程式碼：
+```python
+from imutils.video import VideoStream
+from imutils import face_utils
+import imutils
+import time
+import dlib
+import cv2
+
+detector=dlib.get_frontal_face_detector()  #偵測臉部正面
+predictor=dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")  #構建68點特徵
+
+#左右眼特徵點索引
+(left_Start,left_End)=face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
+(right_Start,right_End)=face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+#嘴特徵點索引
+(leftMouth,rightMouth)=face_utils.FACIAL_LANDMARKS_IDXS['mouth']
+#下巴特徵點索引
+(leftJaw,rightJaw)=face_utils.FACIAL_LANDMARKS_IDXS['jaw']
+#鼻子特徵點索引
+(leftNose,rightNose)=face_utils.FACIAL_LANDMARKS_IDXS['nose']
+#左右眉毛特徵點索引
+(left_leftEyebrow,left_rightEyebrow)=face_utils.FACIAL_LANDMARKS_IDXS['left_eyebrow']
+(right_leftEyebrow,right_rightEyebrow)=face_utils.FACIAL_LANDMARKS_IDXS['right_eyebrow']
+
+vsThread=VideoStream(src=0).start()  #開啟攝影機
+time.sleep(2.0)
+
+while True:
+    frame = vsThread.read()  #讀取影格
+    frame = imutils.resize(frame, width=720)
+    faces = detector(frame, 0)  #偵測人臉
+    for face in faces:
+        shape = predictor(frame, face)  #取得人臉
+        shape = face_utils.shape_to_np(shape)  #轉為numpy
+        #左右眼特徵點
+        leftEye = shape[left_Start:left_End]
+        rightEye = shape[right_Start:right_End]
+        #轉為外殼
+        leftEyeHull = cv2.convexHull(leftEye)
+        rightEyeHull = cv2.convexHull(rightEye)
+        #畫出輪廓
+        cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
+        cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
+        #嘴
+        mouth=shape[leftMouth:rightMouth]
+        mouthHull=cv2.convexHull(mouth)
+        cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 1)
+        #鼻子
+        nose=shape[leftNose:rightNose]
+        noseHull=cv2.convexHull(nose)
+        cv2.drawContours(frame, [noseHull], -1, (0, 255, 0), 1)
+        #下巴
+        jaw=shape[leftJaw:rightJaw]
+        jawHull=cv2.convexHull(jaw)
+        cv2.drawContours(frame, [jawHull], -1, (0, 255, 0), 1)
+        #眉毛
+        leftEyebrow=shape[left_leftEyebrow:left_rightEyebrow]
+        rightEyebrow=shape[right_leftEyebrow:right_rightEyebrow]
+        leftEyebrowHull=cv2.convexHull(leftEyebrow)
+        rightEyebrowHull=cv2.convexHull(rightEyebrow)
+        cv2.drawContours(frame, [leftEyebrowHull], -1, (0, 255, 0), 1)
+        cv2.drawContours(frame, [rightEyebrowHull], -1, (0, 255, 0), 1)
+
+    cv2.imshow("Frame", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+cap.release()
+cv2.destroyAllWindows()
+```
+### 執行結果：
+![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/56445a8d-f60c-4912-8dac-db115fdf2dfb)
+
+### 5.	攝影機臉部偵測
+與上述的使用模型套件相同，此範例需要使用openCV套件框選人臉的數值比數之特點範圍。
+### 程式碼：
+```python
+import dlib
+import cv2
+import imutils
+# 開啟影片檔案
+cap = cv2.VideoCapture(0)
+# Dlib 的人臉偵測器
+detector = dlib.get_frontal_face_detector()
+# 以迴圈從影片檔案讀取影格，並顯示出來
+while(cap.isOpened()):
+  ret, frame = cap.read()
+  # 偵測人臉
+  face_rects, scores, idx = detector.run(frame, 0)
+  # 取出所有偵測的結果
+  for i, d in enumerate(face_rects):
+    x1 = d.left()
+    y1 = d.top()
+    x2 = d.right()
+    y2 = d.bottom()
+    text = "%2.2f(%d)" % (scores[i], idx[i])
+    # 以方框標示偵測的人臉
+    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 4, cv2.LINE_AA)
+    # 標示分數
+    cv2.putText(frame, text, (x1, y1), cv2.FONT_HERSHEY_DUPLEX,
+            0.7, (255, 255, 255), 1, cv2.LINE_AA)
+  # 顯示結果
+  cv2.imshow("Face Detection", frame)
+  if cv2.waitKey(1) & 0xFF == ord('q'):
+    break
+cap.release()
+cv2.destroyAllWindows()
+```
+### 執行結果：
+
+
 
