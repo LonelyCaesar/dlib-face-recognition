@@ -17,3 +17,6 @@ Dlib官方網站提供了許多已經訓練好的模型，我們先將一些常�
 ![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/563a354c-a1ca-409d-a54e-45104642a1ae)
 
 ### 1.	5點特徵人臉影像辨識：
+dlib套件偵測人臉的矩形區塊，也可以偵測鼻子、左右點及嘴巴等。使用<shape_predictor_5_face_landmarks.dat>特徵模型進行人臉矩形區域中偵測5點特徵。然後建議請先安裝pip install opencv-python確保執行時出現缺少套件的問題所在。
+### 程式碼：
+
