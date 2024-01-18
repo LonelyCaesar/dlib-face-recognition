@@ -75,3 +75,46 @@ cv2.destroyAllWindows()
 ![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/0662ddff-2eca-4a08-ac78-373abb99e356)
 ![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/69af6a6a-d0c2-4a9f-8c56-43c72f9a3871)
 
+### 3.	68點特徵人臉偵測
+Dilb除了可以進行基本及5點特徵人臉偵測外，還提供68點特徵人臉偵測，包括了雙眼、鼻子、嘴巴及頭部的輪廓詳細資訊，我們可以畫出這些部位的輪廓圖形。
+使用<shape_predictor_68_face_landmarks.dat>特徵模型進行人臉特徵辨識。
+### 程式碼：
+```python
+import numpy as np
+import cv2  #影象處理庫OpenCV
+import dlib
+
+predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')   #構建68點特徵
+detector = dlib.get_frontal_face_detector()  #偵測臉部正面
+
+img = cv2.imread("media\\LINE_ALBUM_1120609.jpg")  #讀取影象
+dets = detector(img, 1)  #偵測人臉
+for det in dets:
+    #人臉關鍵點識別
+    landmarks = []
+    for p in predictor(img, det).parts():  
+        landmarks.append(np.matrix([p.x, p.y])) 
+    # 取得68點座標
+    for idx, point in enumerate(landmarks):
+        pos = (point[0, 0], point[0, 1])  #[0,0]為x坐標,[0,1]為y坐標
+        cv2.circle(img, pos, 5, color=(0, 255, 0))  #畫出68個小圓點
+        font = cv2.FONT_HERSHEY_SIMPLEX  # 利用cv2.putText輸出1-68
+        #引數依次是：圖片，新增的文字，座標，字型，字型大小，顏色，字型粗細
+        cv2.putText(img, str(idx+1), pos, font, 0.4, (0, 0, 255), 1,cv2.LINE_AA)
+
+cv2.namedWindow("img", 2)     
+cv2.imshow("img", img)       #顯示影象
+cv2.waitKey(0)
+cv2.destroyWindow("img")
+```
+### 執行結果：
+![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/52d6fe02-dce1-4004-aa10-c9b1f3dc7119)
+
+### 4.	攝影機圖像中劃出點輪廓
+Imutils模組是一個圖形處理的模組，它有為dlib提供臉部68點特徵各部位範圍的功能，使用imutils模組就可輕鬆取得各部位的特徵點範圍。
+### 請先安裝
+```
+pip install imutils
+```
+### 程式碼：
+
