@@ -225,6 +225,50 @@ cap.release()
 cv2.destroyAllWindows()
 ```
 ### 執行結果：
+![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/5dfdf44d-8201-4c5f-944b-f0192311ccb2)
 
+### 6.	辨識不同的臉：
+人臉偵測只能得知圖片中是否有人臉存在，並測得人臉的位置；人臉辨識則會進一步指出人臉是屬於何人，或者比對兩個人臉圖形是否為同一人。使用dlib_face_recognition_resnet_model_v1.dat模型做預測。
+### 程式碼：
+```python
+import dlib, numpy
 
+predictor = "shape_predictor_68_face_landmarks.dat"  #人臉68特徵點模型
+recogmodel = "dlib_face_recognition_resnet_model_v1.dat"  #人臉辨識模型
+
+detector = dlib.get_frontal_face_detector()  #偵測臉部正面
+sp = dlib.shape_predictor(predictor)  #讀入人臉特徵點模型
+facerec = dlib.face_recognition_model_v1(recogmodel)  #讀入人臉辨識模型
+
+#取得人臉特徵點向量
+def getFeature(imgfile):
+    img = dlib.load_rgb_image(imgfile)
+    dets = detector(img, 1)
+    for det in dets:
+        shape = sp(img, det)  #特徵點偵測
+        feature = facerec.compute_face_descriptor(img, shape)  #取得128維特徵向量
+        return numpy.array(feature)  #轉換numpy array格式
+
+#判斷是否同一人 
+def samePerson(pic1, pic2):
+    feature1 = getFeature(pic1)
+    feature2 = getFeature(pic2)
+    dist = numpy.linalg.norm(feature1-feature2)  # 計算歐式距離,越小越像
+    print("歐式距離={}".format(dist))
+    if dist < 0.3: 
+        print("{} 和 {} 為同一個人！".format(pic1, pic2))
+    else:
+        print("{} 和 {} 不是同一個人！".format(pic1, pic2))
+    print()
+    
+samePerson("media\\LINE_ALBUM_111.jpg", "media\\LINE_ALBUM_11106.jpg")  #不同人
+samePerson("media\\LINE_ALBUM_1125.jpg", "media\\LINE_ALBUM_1120610.jpg")  #同一人
+```
+### 執行結果：
+![image](https://github.com/LonelyCaesar/dlib-face-recognition/assets/101235367/82cbfb13-2b7d-4082-9c66-c5e9829464f7)
+# 四、結論
+使用了以上的四個模型做人臉辨識後對於論文所寫出來或者是所提出了的議題與FaceNet其概念幾乎完全一樣，但是用了更快的方法來達成而已，或許，這個專案未來可以試著用 FaceNet 來替代 Dlib 的方式進行辨識。對於人工智慧與大數據來說是個專題實作上的作品，對求職的人來說是不可或缺的作品，請於嘗試者做出來。
+# 五、參考
+巨匠電腦python深度學習開發。
+巨匠電腦python人工智慧整合開發。
 
